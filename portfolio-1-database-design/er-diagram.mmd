@@ -1,0 +1,19 @@
+erDiagram
+    CATEGORIES ||--o{ PRODUCTS : groups
+    PRODUCTS ||--o{ INVENTORY : stocked_as
+    BRANCHES ||--o{ INVENTORY : holds
+    CUSTOMERS o|--o{ ORDERS : places
+    BRANCHES ||--o{ ORDERS : fulfills
+    ORDERS ||--|{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : purchased_as
+    ORDERS ||--o| PAYMENTS : paid_by
+    ORDERS ||--o| DELIVERIES : shipped_via
+    CATEGORIES { int category_id PK string category_name UK }
+    PRODUCTS { int product_id PK int category_id FK string product_name numeric price }
+    BRANCHES { int branch_id PK string branch_name string state string address }
+    INVENTORY { int inventory_id PK int branch_id FK int product_id FK int quantity }
+    CUSTOMERS { int customer_id PK string full_name string email UK string phone }
+    ORDERS { int order_id PK int customer_id FK int branch_id FK string order_type string order_status timestamp ordered_at }
+    ORDER_ITEMS { int order_item_id PK int order_id FK int product_id FK int quantity numeric unit_price }
+    PAYMENTS { int payment_id PK int order_id FK numeric amount string payment_status }
+    DELIVERIES { int delivery_id PK int order_id FK string delivery_status timestamp dispatched_at timestamp delivered_at }

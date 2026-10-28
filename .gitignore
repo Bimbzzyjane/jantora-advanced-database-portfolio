@@ -1,0 +1,9 @@
+# Local secrets and temporary files
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+__pycache__/
+*.pyc
+.pgpass
