@@ -1,19 +1,70 @@
 erDiagram
-    CATEGORIES ||--o{ PRODUCTS : groups
-    PRODUCTS ||--o{ INVENTORY : stocked_as
+    CATEGORIES ||--o{ PRODUCTS : categorises
     BRANCHES ||--o{ INVENTORY : holds
+    PRODUCTS ||--o{ INVENTORY : stocked_in
     CUSTOMERS o|--o{ ORDERS : places
-    BRANCHES ||--o{ ORDERS : fulfills
-    ORDERS ||--|{ ORDER_ITEMS : contains
-    PRODUCTS ||--o{ ORDER_ITEMS : purchased_as
-    ORDERS ||--o| PAYMENTS : paid_by
-    ORDERS ||--o| DELIVERIES : shipped_via
-    CATEGORIES { int category_id PK string category_name UK }
-    PRODUCTS { int product_id PK int category_id FK string product_name numeric price }
-    BRANCHES { int branch_id PK string branch_name string state string address }
-    INVENTORY { int inventory_id PK int branch_id FK int product_id FK int quantity }
-    CUSTOMERS { int customer_id PK string full_name string email UK string phone }
-    ORDERS { int order_id PK int customer_id FK int branch_id FK string order_type string order_status timestamp ordered_at }
-    ORDER_ITEMS { int order_item_id PK int order_id FK int product_id FK int quantity numeric unit_price }
-    PAYMENTS { int payment_id PK int order_id FK numeric amount string payment_status }
-    DELIVERIES { int delivery_id PK int order_id FK string delivery_status timestamp dispatched_at timestamp delivered_at }
+    BRANCHES ||--o{ ORDERS : fulfils
+    ORDERS ||--o{ ORDER_ITEMS : contains
+    PRODUCTS ||--o{ ORDER_ITEMS : appears_in
+    ORDERS ||--o| PAYMENTS : has
+    ORDERS ||--o| DELIVERIES : has
+    CATEGORIES {
+        int category_id PK
+        varchar category_name UK
+    }
+    BRANCHES {
+        int branch_id PK
+        varchar branch_name UK
+        varchar state
+        text address
+    }
+    CUSTOMERS {
+        int customer_id PK
+        varchar full_name
+        varchar email UK
+        varchar phone
+        text address
+    }
+    PRODUCTS {
+        int product_id PK
+        int category_id FK
+        varchar product_name
+        numeric price
+    }
+    INVENTORY {
+        int inventory_id PK
+        int branch_id FK
+        int product_id FK
+        int quantity
+    }
+    ORDERS {
+        int order_id PK
+        int customer_id FK
+        int branch_id FK
+        varchar order_type
+        varchar order_status
+        timestamptz ordered_at
+    }
+    ORDER_ITEMS {
+        int order_item_id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        numeric unit_price
+    }
+    PAYMENTS {
+        int payment_id PK
+        int order_id FK
+        numeric amount
+        varchar payment_method
+        varchar payment_status
+        timestamptz paid_at
+    }
+    DELIVERIES {
+        int delivery_id PK
+        int order_id FK
+        text delivery_address
+        varchar delivery_status
+        timestamptz dispatched_at
+        timestamptz delivered_at
+    }

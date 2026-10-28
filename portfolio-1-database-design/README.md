@@ -1,45 +1,45 @@
-# Portfolio 1 — Database Design and Modelling (7 marks)
+# Portfolio 1 — Database Design and Modelling
 
-## Organisation and business process
-Jantora Superstores is a simulated Nigerian retail business operating a physical supermarket and an online shopping channel. It begins with one Lagos store, then expands to additional branches. The relational database holds customer, product, order, payment, inventory, and delivery records.
+**Course:** MIT 8103 Advanced Database Systems  
+**Case study:** Jantora Superstores (simulated organisation)  
+**Marks:** 7
 
-**Users:** registered online customers; cashiers; inventory staff; branch managers; delivery staff; system administrators. These users ordinarily interact through an application; this portfolio demonstrates the underlying SQL directly.
+## Overview
 
-**Key operations:** register customers; list products; manage stock by branch; record in-store and online orders; record payments; update delivery statuses; report on branch sales and inventory.
+Jantora Superstores is a fictional Nigerian supermarket that operates a physical store and an online shopping platform. The scenario begins in Lagos and considers later expansion to multiple branches. This portfolio documents the design of a PostgreSQL database for customers, products, categories, branches, inventory, orders, order items, payments, and deliveries.
 
-## Design decisions
-- Online orders must reference a customer; walk-in purchases may have `customer_id = NULL`. A `CHECK` constraint enforces this.
-- An order is fulfilled by one branch in this simplified model. Cross-branch split fulfillment is out of scope.
-- Product stock is stored in `inventory`, one row per `(branch_id, product_id)`, not in `products`.
-- `order_items.unit_price` preserves the price at purchase time, even if `products.price` later changes.
-- Each order has zero or one payment record and zero or one delivery record in this simplified model. Multiple payment attempts, refunds, delivery status histories, and partial shipments are not modelled.
-- Delivery status is a manually updated value, not GPS tracking.
-- The database supports multiple branches from the start, even though the scenario begins with one branch.
+## Portfolio 1 deliverables
 
-## Entities and relationships
-1. `categories` (1) → (many) `products`
-2. `branches` (1) → (many) `inventory`; `products` (1) → (many) `inventory`
-3. `customers` (1) → (many) `orders` (nullable for in-store sales)
-4. `branches` (1) → (many) `orders`
-5. `orders` (1) → (many) `order_items`; `products` (1) → (many) `order_items`
-6. `orders` (1) → (zero/one) `payments` and `deliveries`
+| Requirement | File | Description |
+|---|---|---|
+| Case study description | [01_case_study.md](01_case_study.md) | Business background, users, stored data, operations and expansion |
+| ER diagram | [02_er_diagram.md](02_er_diagram.md), [er-diagram.mmd](er-diagram.mmd) | Nine entities and their relationships; editable Mermaid source |
+| Relational schema | [03_relational_schema.md](03_relational_schema.md) | Formal relational notation and data dictionary |
+| Keys and constraints | [04_keys_and_constraints.md](04_keys_and_constraints.md) | Primary/foreign keys and integrity rules |
+| Normalisation | [05_normalisation.md](05_normalisation.md) | 1NF, 2NF and 3NF explained with Jantora examples |
+| PostgreSQL implementation | [01_schema.sql](01_schema.sql) | Table definitions, keys, constraints and defaults |
+| Sample data | [02_seed.sql](02_seed.sql) | Fictional data for development and demonstration |
+| Practical evidence | [evidence/](evidence/) | Screenshots and short observations after verification |
 
-The diagram is in [`er-diagram.mmd`](er-diagram.mmd). The actual relational schema, keys and constraints are in [`01_schema.sql`](01_schema.sql).
+## Design summary
 
-## Normalisation (up to 3NF)
-**1NF:** Each field holds one value, and order products are represented by separate rows in `order_items` rather than a comma-separated list.
+- The schema contains nine related tables.
+- Registered customers are required for online orders; walk-in purchases may have no customer record.
+- `inventory` stores quantities separately for each `(branch_id, product_id)`.
+- `order_items` records products purchased, quantities, and prices at the time of sale.
+- The simplified model supports a maximum of one payment record and one delivery record per order.
+- Delivery tracking is status-based; GPS tracking and delivery history are outside the current scope.
 
-**2NF:** Every non-key attribute depends on the whole key. In `inventory`, the pair `(branch_id, product_id)` uniquely identifies the stock quantity; `branch_name` and `product_name` are not repeated there. `order_items` uses a surrogate primary key, while its product and order references identify the purchased item.
+## How to reproduce the database
 
-**3NF:** Non-key attributes depend on keys, not on other non-key attributes. Product category names are held in `categories`, branch addresses in `branches`, and customer contact details in `customers` instead of being copied into every order. `order_items.unit_price` is intentionally stored as a historical transaction fact, not as a copy of the current product price.
+1. Create an empty PostgreSQL database named `jantora_db`.
+2. Connect pgAdmin's Query Tool to `jantora_db`.
+3. Run `01_schema.sql` once to create the nine tables.
+4. Run `02_seed.sql` once to insert fictional sample data.
+5. Inspect the tables and constraints in pgAdmin and save genuine evidence in `evidence/`.
 
-## Validation checklist
-- [ ] Run schema in PostgreSQL without errors.
-- [ ] Run seed script and inspect inserted records.
-- [ ] Run validation queries and capture output.
-- [ ] Verify invalid online orders without a customer are rejected.
-- [ ] Export or screenshot the ER diagram.
-- [ ] Write a short note describing what you observed when testing.
+## Evidence and verification
 
-## Evidence to capture
-Screenshots of created tables, ER diagram, sample query results, and constraint error from an intentional invalid insert (test inside a transaction and roll it back). Do not present untested code as successful execution.
+See [evidence/README.md](evidence/README.md) for the recommended screenshots and observation notes.
+
+
