@@ -1,0 +1,90 @@
+[
+  {
+    "product_id": 1,
+    "product_name": "Rice",
+    "category": "Foodstuff",
+    "price": 45000,
+    "currency": "NGN",
+    "attributes": {
+      "brand": "Jantora Select",
+      "weight": "50kg",
+      "packaging": "Bag"
+    },
+    "stock_by_branch": [
+      {
+        "branch": "Ikeja",
+        "quantity": 30
+      },
+      {
+        "branch": "Lekki",
+        "quantity": 15
+      }
+    ]
+  },
+  {
+    "product_id": 2,
+    "product_name": "Cooking Oil",
+    "category": "Foodstuff",
+    "price": 12500,
+    "currency": "NGN",
+    "attributes": {
+      "brand": "Jantora Select",
+      "volume": "5L",
+      "packaging": "Bottle"
+    },
+    "stock_by_branch": [
+      {
+        "branch": "Ikeja",
+        "quantity": 20
+      },
+      {
+        "branch": "Lekki",
+        "quantity": 12
+      }
+    ]
+  },
+  {
+    "product_id": 3,
+    "product_name": "Laundry Detergent",
+    "category": "Household",
+    "price": 6500,
+    "currency": "NGN",
+    "attributes": {
+      "weight": "2kg",
+      "form": "Powder",
+      "scent": "Fresh"
+    },
+    "stock_by_branch": [
+      {
+        "branch": "Ikeja",
+        "quantity": 25
+      },
+      {
+        "branch": "Lekki",
+        "quantity": 10
+      }
+    ]
+  },
+  {
+    "product_id": 4,
+    "product_name": "Electric Kettle",
+    "category": "Appliances",
+    "price": 18000,
+    "currency": "NGN",
+    "attributes": {
+      "capacity": "1.8L",
+      "power": "1500W",
+      "warranty_months": 12
+    },
+    "stock_by_branch": [
+      {
+        "branch": "Ikeja",
+        "quantity": 8
+      },
+      {
+        "branch": "Lekki",
+        "quantity": 5
+      }
+    ]
+  }
+]
