@@ -1,55 +1,78 @@
 # Jantora Superstores — Advanced Database Systems Portfolio
 
-**Course:** MIT 8103 Advanced Database Systems | **Assessment:** Individual practical portfolio (40 marks)
+**Course:** MIT 8103 — Advanced Database Systems
 
-## Overview and case study
+**Assessment:** Individual practical database portfolio
 
-This repository contains five completed practical portfolios using Jantora Superstores, a fictional Nigerian retailer with physical stores and an online shopping scenario. The relational model supports registered online customers, anonymous walk-in purchases, branch inventory, orders, payments and deliveries. The sample branches represent expansion from Lagos to other states. No storefront application is implemented.
+## About the project
 
-## Technologies
+This project applies advanced database concepts to Jantora Superstores, a fictional retailer based in Lagos, Nigeria. The business sells groceries and household goods through physical stores and an online shopping scenario, with sample branches in Ikeja, Lekki and Ibadan.
 
-- **PostgreSQL and pgAdmin:** relational design, business queries, execution plans, indexing and transaction experiments. The screenshots display a server labelled PostgreSQL 18.
-- **MongoDB Atlas:** a separate document catalogue hosted on AWS Cape Town (`af-south-1`), with MongoDB `8.0.36` and Free tier shown in the evidence.
-- **mongosh:** alternative scripts for the Atlas catalogue experiments.
-- **Mermaid:** editable entity relationship diagram source.
+I chose a supermarket because its everyday activities bring together products, customers, stock, orders and payments. As more branches open, the business needs organised records to show what was purchased, where stock is held and which orders have been paid for. Using one case study helped me connect database design, useful business queries, reliable stock updates and cloud database concepts across five portfolios.
 
-## Portfolios
+The repository contains database scripts, explanations, diagrams and screenshots. The practical work was carried out through database tools; a shopping website or application is outside the scope of this project.
 
-| Portfolio | Completed work | Documentation |
-|---|---|---|
-| 1 — Database design and modelling | Nine-table schema, keys, constraints, normalisation and sample data | [Portfolio 1](portfolio-1-database-design/README.md) |
-| 2 — Query processing and optimisation | Five business queries, an inventory execution plan and a separate indexing benchmark | [Portfolio 2](portfolio-2-query-optimisation/README.md) |
-| 3 — Transactions and concurrency | COMMIT, ROLLBACK, isolation and row-lock contention experiments | [Portfolio 3](portfolio-3-transactions-concurrency/README.md) |
-| 4 — NoSQL and advanced data models | Nested product documents, filters, update and temporary-document deletion in Atlas | [Portfolio 4](portfolio-4-nosql/README.md) |
-| 5 — Distributed and cloud databases | Atlas deployment, observed replica-set topology, access and monitoring; discussion of consistency and sharding | [Portfolio 5](portfolio-5-distributed-cloud/README.md) |
+## Technologies used
 
-## Evidence
+| Technology | How I used it |
+|---|---|
+| **PostgreSQL** | Stored retail records in related tables and demonstrated SQL queries, indexing and transactions. The pgAdmin screenshots show a server labelled PostgreSQL 18. |
+| **pgAdmin** | Ran SQL and inspected PostgreSQL tables, query results and execution plans—the steps the database uses to answer a query. |
+| **MongoDB** | Modelled a separate catalogue using documents that can hold different product specifications. |
+| **MongoDB Atlas** | Hosted the MongoDB catalogue in the cloud and provided deployment and monitoring views. The captured Free deployment uses MongoDB `8.0.36` on AWS Cape Town (`af-south-1`). |
+| **mongosh and Mermaid** | Provided alternative MongoDB shell scripts and the editable source for the database relationship diagram, respectively. |
 
-Each portfolio contains an `evidence/` folder with the supplied screenshots. The portfolio documents identify the results visible in those images and distinguish them from student-reported observations or architectural discussion. Screenshots record particular runs; they do not establish the current state of a live database.
+## What I accomplished
 
-## Reproduction
+Each portfolio folder contains its implementation files, detailed guide and an `evidence/` folder with screenshots.
 
-For PostgreSQL, create an empty database named `jantora_db` and run these scripts once, in order, using pgAdmin or `psql`:
+| Portfolio | Work completed | Guide | Evidence |
+|---|---|---|---|
+| **1 — Database design and modelling** | Designed nine related tables, created an entity relationship diagram, explained normalisation to reduce repeated data, and implemented keys, validation rules and sample records. | [Portfolio 1](portfolio-1-database-design/README.md) | [Screenshots](portfolio-1-database-design/evidence/) |
+| **2 — Query processing and optimisation** | Executed five business queries, examined the inventory query's execution plan and compared a customer lookup before and after adding an index. | [Portfolio 2](portfolio-2-query-optimisation/README.md) | [Screenshots](portfolio-2-query-optimisation/evidence/) |
+| **3 — Transactions and concurrency** | Tested saving changes with COMMIT, cancelling changes with ROLLBACK, visibility of updates between two sessions and locking when both sessions update the same stock record. | [Portfolio 3](portfolio-3-transactions-concurrency/README.md) | [Screenshots](portfolio-3-transactions-concurrency/evidence/) |
+| **4 — NoSQL and advanced data models** | Created four MongoDB product documents with nested specifications and sample branch stock, then demonstrated searches, an update and temporary-record deletion. | [Portfolio 4](portfolio-4-nosql/README.md) | [Screenshots](portfolio-4-nosql/evidence/) |
+| **5 — Distributed and cloud databases** | Inspected the Atlas deployment, primary and secondary members, collection access and monitoring. Discussed consistency and future scaling options. | [Portfolio 5](portfolio-5-distributed-cloud/README.md) | [Screenshots](portfolio-5-distributed-cloud/evidence/) |
 
-```bash
-psql -v ON_ERROR_STOP=1 -d jantora_db -f portfolio-1-database-design/01_schema.sql
-psql -v ON_ERROR_STOP=1 -d jantora_db -f portfolio-1-database-design/02_seed.sql
-psql -v ON_ERROR_STOP=1 -d jantora_db -f portfolio-1-database-design/03_additional_seed.sql
-```
+The PostgreSQL model covers customers, categories, products, branches, inventory, orders, order items, payments and deliveries. It supports registered online customers and anonymous walk-in purchases. Stock is recorded separately for each product at each branch, and order items retain the price charged at purchase time.
 
-The schema creates nine business tables. The basic seed creates three orders; the additional seed adds Janet and Joshua and their orders, producing the five-order dataset shown in Portfolio 2. The revised additional seed uses an explicit transaction and captures inserted customer/order IDs so line items and payments reference only its new orders. It remains a once-only script after the basic seed: existing sample emails cause failure, and changes to the original catalogue can affect its lowest/highest-product selections and amounts. Failed row inserts are not committed, although identity-sequence gaps can remain. The [Mermaid source](portfolio-1-database-design/er-diagram.mmd) provides the editable ERD.
+See the [relationship diagram and explanation](portfolio-1-database-design/02_er_diagram.md) or its [editable Mermaid source](portfolio-1-database-design/er-diagram.mmd).
 
-Portfolio 2 business queries use this dataset. Its indexing script creates a separate 100,000-row synthetic table; rerunning its setup drops and recreates that benchmark table. Portfolio 3 scripts require section-by-section execution and two distinct connections for isolation and locking tests. The revised COMMIT/ROLLBACK script consistently targets inventory ID 1, checks branch/product IDs 1 and requires 30 units before deductions or 29 before restoration; mismatches raise an exception. The additional seed and COMMIT/ROLLBACK scripts were revised after the original experiments and statically reviewed only; the retained historical screenshots were not generated by the revisions. Detailed procedures and remaining execution limitations are in the linked portfolios.
+## Key results
 
-For MongoDB, use either the Portfolio 4 JSON insertion route in Atlas Data Explorer or its mongosh insertion script. These are alternatives. The Filter field accepts filter documents; the JavaScript files run in mongosh. Existing product IDs and temporary ID 9001 must be checked before repeating modifications. Portfolio 5 documents the same Atlas deployment. Credentials and connection strings are not part of the reproduction materials.
+- **Business queries:** The five-order dataset showed three paid orders totalling **NGN 54,100** for Ikeja. Other queries retrieved order details, products priced above average, branch stock and calculated order totals.
+- **Query performance:** On a separate table of **100,000 synthetic records**, the selected customer-lookup runs took **4.713 ms before indexing** and **0.099 ms after indexing**. An index helps the database locate matching records without scanning the whole table. The [performance analysis](portfolio-2-query-optimisation/performance_analysis.md) explains the plans and measurement limits.
+- **Transactions:** A committed deduction changed stock from **30 to 29 units**. After restoring the starting quantity, a separate temporary deduction was rolled back, leaving **30 units**. A competing update also produced a lock timeout, and the documented retry succeeded after the lock was released.
+- **Product catalogue:** MongoDB held Rice, Cooking Oil, Laundry Detergent and Electric Kettle documents. The screenshots show the kettle warranty changed from **12 to 18 months** and confirm deletion of the temporary test product.
+- **Cloud deployment:** Atlas showed **one primary and two secondary members**, successful access to the four products and operation-count charts. These members form a replica set, which maintains copies of the database.
+
+## Finding and running the scripts
+
+To recreate the PostgreSQL setup, create an empty database named `jantora_db`, connect to it in pgAdmin and run these files once, in order:
+
+1. [`01_schema.sql`](portfolio-1-database-design/01_schema.sql) — creates the nine tables.
+2. [`02_seed.sql`](portfolio-1-database-design/02_seed.sql) — inserts the initial sample data, including three orders.
+3. [`03_additional_seed.sql`](portfolio-1-database-design/03_additional_seed.sql) — is intended to add Janet and Joshua and their orders, bringing the total to five. Its revised version has not been execution-tested.
+
+Read the [Portfolio 1 execution conditions](portfolio-1-database-design/README.md#how-to-reproduce-the-database) first. The additional seed requires the original sample data and unused sample customer emails; it is not intended for repeated execution against the same populated database.
+
+For the remaining exercises:
+
+- **Queries and indexing:** Use Portfolio 2's [business queries](portfolio-2-query-optimisation/01_queries.sql), [inventory execution plan](portfolio-2-query-optimisation/02_execution_plans.sql) and [indexing benchmark](portfolio-2-query-optimisation/03_index_optimisation.sql). Run the benchmark sections in order; repeating its setup deletes and recreates only the synthetic benchmark table.
+- **Transactions:** Follow the [Portfolio 3 guide](portfolio-3-transactions-concurrency/README.md) section by section. Check the required starting stock and use two distinct connections for isolation and locking tests.
+- **MongoDB:** Follow the [Portfolio 4 guide](portfolio-4-nosql/README.md). Use either the [JSON sample data](portfolio-4-nosql/01_insert_documents.json) in Atlas Data Explorer or the [alternative mongosh insertion script](portfolio-4-nosql/01_create_and_insert.js). The [query](portfolio-4-nosql/02_queries.js) and [update/delete](portfolio-4-nosql/03_update_and_delete.js) files explain both routes. Atlas's Filter box accepts search conditions; full JavaScript commands run in mongosh. Check existing product IDs and starting values before repeating changes.
+- **Cloud inspection:** Follow [Portfolio 5](portfolio-5-distributed-cloud/README.md), which uses the same Atlas deployment as Portfolio 4.
+
+Database credentials and connection strings are not included in the repository.
 
 ## Scope and limitations
 
-- All business and benchmark data are fictional. The MongoDB catalogue is separate from, and not synchronised with, PostgreSQL; matching product IDs do not identify equivalent records across systems.
-- The relational schema simplifies payment and delivery relationships and does not implement a complete checkout, stock-movement or delivery-history workflow.
-- Benchmark timings describe selected runs on a synthetic workload, not production performance. Transaction screenshots provide selected observations, not a complete two-session transcript or crash-recovery test.
-- Atlas evidence shows cloud configuration, three replica-set members, collection access and monitoring at capture time. Forced failover, regional resilience, sharding and cross-node consistency timing were not tested. Backups were inactive in the supplied overview.
+- All data is fictional. The MongoDB catalogue is separate from PostgreSQL and is not synchronised with it; matching IDs do not establish matching products.
+- The relational design allows at most one payment and one delivery record per order. A complete checkout process linking orders, payments and stock changes, and a full delivery history, would require further work.
+- Performance timings describe selected synthetic-data runs, rather than expected performance for a live retailer. Crash recovery was not tested.
+- The final MongoDB collection screenshot shows the four original products but does not verify the reported restoration of the kettle warranty to 12 months.
+- Cloud access and member roles were observed. Failover, regional resilience and consistency timing between members were not tested. Read/write concerns and sharding—dividing data across servers—were discussed, not tested. Backups were inactive in the captured Atlas overview.
 
-## Final assessment documentation
+## Final report and AI-use declaration
 
-The repository contains a [final-report outline](docs/final-report-outline.md). The completed report, personal reflection, consolidated reference list and final AI-use disclosure are not included. Source attribution remains in the portfolio documents so technical claims stay traceable until the consolidated report is available. The final disclosure should accurately identify assistance and the work personally reviewed, executed and corrected, in accordance with the institution's requirements.
+The [final report](Final-documentation/Okedoyin_Janet_301931096.md) contains the portfolio summary, individual reflection, evidence links, references and AI-use declaration. Technical sources also appear in the individual portfolio documents.
