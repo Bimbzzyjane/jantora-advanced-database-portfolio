@@ -1,134 +1,79 @@
--- STEP 1: Add two new registered customers
-INSERT INTO customers (full_name, email, phone, address)
-VALUES
-    ('Janet Okedoyin', 'janet.okedoyin@example.com',
-     '08000000001', 'Surulere, Lagos'),
-    ('Joshua Adedeji', 'joshua.adedeji@example.com',
-     '08000000002', 'Yaba, Lagos');
+-- JANTORA | Portfolio 1 | Additional fictional sample data.
+-- Run this entire script once after 01_schema.sql and 02_seed.sql in jantora_db.
 
+BEGIN;
 
--- STEP 2: Create an online order for Janet
-INSERT INTO orders (
-    customer_id,
-    branch_id,
-    order_type,
-    order_status
-)
-VALUES (
-    (SELECT customer_id FROM customers
-     WHERE email = 'janet.okedoyin@example.com'),
-    (SELECT branch_id FROM branches
-     WHERE branch_name = 'Jantora Ikeja'),
-    'ONLINE',
-    'COMPLETED'
-);
+DO $additional_seed$
+DECLARE
+    v_ikeja_branch_id public.branches.branch_id%TYPE;
+    v_lekki_branch_id public.branches.branch_id%TYPE;
+    v_janet_product_id public.products.product_id%TYPE;
+    v_joshua_product_id public.products.product_id%TYPE;
+    v_janet_price public.products.price%TYPE;
+    v_joshua_price public.products.price%TYPE;
+    v_janet_customer_id public.customers.customer_id%TYPE;
+    v_joshua_customer_id public.customers.customer_id%TYPE;
+    v_janet_order_id public.orders.order_id%TYPE;
+    v_joshua_order_id public.orders.order_id%TYPE;
+BEGIN
+    -- Required lookups must each return a row; missing data abort the script.
+    SELECT branch_id INTO STRICT v_ikeja_branch_id
+    FROM public.branches
+    WHERE branch_name = 'Jantora Ikeja';
 
+    SELECT branch_id INTO STRICT v_lekki_branch_id
+    FROM public.branches
+    WHERE branch_name = 'Jantora Lekki';
 
--- STEP 3: Create an online order for Joshua
-INSERT INTO orders (
-    customer_id,
-    branch_id,
-    order_type,
-    order_status
-)
-VALUES (
-    (SELECT customer_id FROM customers
-     WHERE email = 'joshua.adedeji@example.com'),
-    (SELECT branch_id FROM branches
-     WHERE branch_name = 'Jantora Lekki'),
-    'ONLINE',
-    'PROCESSING'
-);
-
-
--- STEP 4: Add one existing product to each new order
--- Product is selected from the existing products table.
-
-INSERT INTO order_items (
-    order_id,
-    product_id,
-    quantity,
-    unit_price
-)
-SELECT
-    o.order_id,
-    p.product_id,
-    2,
-    p.price
-FROM orders AS o
-JOIN customers AS c
-    ON c.customer_id = o.customer_id
-CROSS JOIN LATERAL (
-    SELECT product_id, price
-    FROM products
+    SELECT product_id, price INTO STRICT v_janet_product_id, v_janet_price
+    FROM public.products
     ORDER BY product_id
-    LIMIT 1
-) AS p
-WHERE c.email = 'janet.okedoyin@example.com';
+    LIMIT 1;
 
-
-INSERT INTO order_items (
-    order_id,
-    product_id,
-    quantity,
-    unit_price
-)
-SELECT
-    o.order_id,
-    p.product_id,
-    3,
-    p.price
-FROM orders AS o
-JOIN customers AS c
-    ON c.customer_id = o.customer_id
-CROSS JOIN LATERAL (
-    SELECT product_id, price
-    FROM products
+    SELECT product_id, price INTO STRICT v_joshua_product_id, v_joshua_price
+    FROM public.products
     ORDER BY product_id DESC
-    LIMIT 1
-) AS p
-WHERE c.email = 'joshua.adedeji@example.com';
+    LIMIT 1;
 
+    -- STEP 1: Preserve the two original customers; capture generated IDs.
+    INSERT INTO public.customers (full_name, email, phone, address)
+    VALUES ('Janet Okedoyin', 'janet.okedoyin@example.com',
+            '08000000001', 'Surulere, Lagos')
+    RETURNING customer_id INTO v_janet_customer_id;
 
--- STEP 5: Record payment for Janet (successful)
-INSERT INTO payments (
-    order_id,
-    amount,
-    payment_method,
-    payment_status,
-    paid_at
-)
-SELECT
-    o.order_id,
-    SUM(oi.quantity * oi.unit_price),
-    'CARD',
-    'PAID',
-    CURRENT_TIMESTAMP
-FROM orders AS o
-JOIN customers AS c
-    ON c.customer_id = o.customer_id
-JOIN order_items AS oi
-    ON oi.order_id = o.order_id
-WHERE c.email = 'janet.okedoyin@example.com'
-GROUP BY o.order_id;
+    INSERT INTO public.customers (full_name, email, phone, address)
+    VALUES ('Joshua Adedeji', 'joshua.adedeji@example.com',
+            '08000000002', 'Yaba, Lagos')
+    RETURNING customer_id INTO v_joshua_customer_id;
 
+    -- STEPS 2-3: Capture these specific new orders, without assumed IDs.
+    INSERT INTO public.orders (customer_id, branch_id, order_type, order_status)
+    VALUES (v_janet_customer_id, v_ikeja_branch_id, 'ONLINE', 'COMPLETED')
+    RETURNING order_id INTO v_janet_order_id;
 
--- STEP 6: Record payment for Joshua (pending)
-INSERT INTO payments (
-    order_id,
-    amount,
-    payment_method,
-    payment_status
-)
-SELECT
-    o.order_id,
-    SUM(oi.quantity * oi.unit_price),
-    'TRANSFER',
-    'PENDING'
-FROM orders AS o
-JOIN customers AS c
-    ON c.customer_id = o.customer_id
-JOIN order_items AS oi
-    ON oi.order_id = o.order_id
-WHERE c.email = 'joshua.adedeji@example.com'
-GROUP BY o.order_id;
+    INSERT INTO public.orders (customer_id, branch_id, order_type, order_status)
+    VALUES (v_joshua_customer_id, v_lekki_branch_id, 'ONLINE', 'PROCESSING')
+    RETURNING order_id INTO v_joshua_order_id;
+
+    -- STEP 4: Add the original quantities to only the captured new orders.
+    INSERT INTO public.order_items (order_id, product_id, quantity, unit_price)
+    VALUES (v_janet_order_id, v_janet_product_id, 2, v_janet_price),
+           (v_joshua_order_id, v_joshua_product_id, 3, v_joshua_price);
+
+    -- STEPS 5-6: Derive payments from only those new orders' line items.
+    INSERT INTO public.payments
+        (order_id, amount, payment_method, payment_status, paid_at)
+    SELECT v_janet_order_id, SUM(quantity * unit_price),
+           'CARD', 'PAID', CURRENT_TIMESTAMP
+    FROM public.order_items
+    WHERE order_id = v_janet_order_id;
+
+    INSERT INTO public.payments
+        (order_id, amount, payment_method, payment_status)
+    SELECT v_joshua_order_id, SUM(quantity * unit_price), 'TRANSFER', 'PENDING'
+    FROM public.order_items
+    WHERE order_id = v_joshua_order_id;
+END;
+$additional_seed$ LANGUAGE plpgsql;
+
+COMMIT;

@@ -1,6 +1,5 @@
 -- Portfolio 2: Jantora Superstores business queries.
 -- Run in pgAdmin Query Tool connected to jantora_db.
--- These queries only read data; capture the Data Output for each.
 
 -- Q1: Order details (joins): customer, branch, and payment status.
 SELECT o.order_id, o.order_type, o.order_status,

@@ -2,38 +2,54 @@
 
 **Course:** MIT 8103 Advanced Database Systems | **Assessment:** Individual practical portfolio (40 marks)
 
-## Case study
-Jantora Superstores is a **fictional** supermarket in Lagos, Nigeria, operating a physical store and an e-commerce platform from the start. Customers register before ordering online; walk-in purchases may be anonymous. Jantora later expands to branches in Lagos and other states. Its database supports product catalogues, branch-level inventory, purchases, payments, and delivery status tracking.
+## Overview and case study
 
-## Portfolio roadmap
-1. **Database design and modelling:** ER diagram, relational schema, constraints, and normalisation.
-2. **Query processing and optimisation:** queries, `EXPLAIN (ANALYZE, BUFFERS)`, indexes, performance evidence.
-3. **Transactions and concurrency:** COMMIT, ROLLBACK, isolation, stock contention.
-4. **NoSQL:** document model for flexible product attributes.
-5. **Distributed/cloud:** evaluate cloud deployment, replication, consistency and branch availability.
+This repository contains five completed practical portfolios using Jantora Superstores, a fictional Nigerian retailer with physical stores and an online shopping scenario. The relational model supports registered online customers, anonymous walk-in purchases, branch inventory, orders, payments and deliveries. The sample branches represent expansion from Lagos to other states. No storefront application is implemented.
 
-## Run Portfolio 1
-Requires PostgreSQL 14+ and `psql` (or run each script using pgAdmin Query Tool).
+## Technologies
 
-1. Create an empty database named `jantora_db` using pgAdmin or `createdb jantora_db`.
-2. Run `portfolio-1-database-design/01_schema.sql` against `jantora_db`.
-3. Run `portfolio-1-database-design/02_seed.sql`.
-4. Run `portfolio-1-database-design/03_validation.sql` and inspect the results.
-5. Open `portfolio-1-database-design/er-diagram.mmd` in a Mermaid renderer to view the ERD.
+- **PostgreSQL and pgAdmin:** relational design, business queries, execution plans, indexing and transaction experiments. The screenshots display a server labelled PostgreSQL 18.
+- **MongoDB Atlas:** a separate document catalogue hosted on AWS Cape Town (`af-south-1`), with MongoDB `8.0.36` and Free tier shown in the evidence.
+- **mongosh:** alternative scripts for the Atlas catalogue experiments.
+- **Mermaid:** editable entity relationship diagram source.
 
-Example with psql:
+## Portfolios
+
+| Portfolio | Completed work | Documentation |
+|---|---|---|
+| 1 — Database design and modelling | Nine-table schema, keys, constraints, normalisation and sample data | [Portfolio 1](portfolio-1-database-design/README.md) |
+| 2 — Query processing and optimisation | Five business queries, an inventory execution plan and a separate indexing benchmark | [Portfolio 2](portfolio-2-query-optimisation/README.md) |
+| 3 — Transactions and concurrency | COMMIT, ROLLBACK, isolation and row-lock contention experiments | [Portfolio 3](portfolio-3-transactions-concurrency/README.md) |
+| 4 — NoSQL and advanced data models | Nested product documents, filters, update and temporary-document deletion in Atlas | [Portfolio 4](portfolio-4-nosql/README.md) |
+| 5 — Distributed and cloud databases | Atlas deployment, observed replica-set topology, access and monitoring; discussion of consistency and sharding | [Portfolio 5](portfolio-5-distributed-cloud/README.md) |
+
+## Evidence
+
+Each portfolio contains an `evidence/` folder with the supplied screenshots. The portfolio documents identify the results visible in those images and distinguish them from student-reported observations or architectural discussion. Screenshots record particular runs; they do not establish the current state of a live database.
+
+## Reproduction
+
+For PostgreSQL, create an empty database named `jantora_db` and run these scripts once, in order, using pgAdmin or `psql`:
+
 ```bash
-psql -d jantora_db -f portfolio-1-database-design/01_schema.sql
-psql -d jantora_db -f portfolio-1-database-design/02_seed.sql
-psql -d jantora_db -f portfolio-1-database-design/03_validation.sql
+psql -v ON_ERROR_STOP=1 -d jantora_db -f portfolio-1-database-design/01_schema.sql
+psql -v ON_ERROR_STOP=1 -d jantora_db -f portfolio-1-database-design/02_seed.sql
+psql -v ON_ERROR_STOP=1 -d jantora_db -f portfolio-1-database-design/03_additional_seed.sql
 ```
 
-> Run scripts in order, once, on an empty database. The seed data is fictional. Save your own screenshots of the results in the relevant portfolio folder. Do not commit passwords or `.env` files.
+The schema creates nine business tables. The basic seed creates three orders; the additional seed adds Janet and Joshua and their orders, producing the five-order dataset shown in Portfolio 2. The revised additional seed uses an explicit transaction and captures inserted customer/order IDs so line items and payments reference only its new orders. It remains a once-only script after the basic seed: existing sample emails cause failure, and changes to the original catalogue can affect its lowest/highest-product selections and amounts. Failed row inserts are not committed, although identity-sequence gaps can remain. The [Mermaid source](portfolio-1-database-design/er-diagram.mmd) provides the editable ERD.
 
-## Current status
-- Portfolio 1: initial design and runnable scripts prepared; local PostgreSQL execution and screenshots **pending**.
-- Portfolios 2–5: planned, not yet implemented or tested.
-- Final report: outline prepared; individual reflection and AI-use declaration to be completed truthfully after practical work.
+Portfolio 2 business queries use this dataset. Its indexing script creates a separate 100,000-row synthetic table; rerunning its setup drops and recreates that benchmark table. Portfolio 3 scripts require section-by-section execution and two distinct connections for isolation and locking tests. The revised COMMIT/ROLLBACK script consistently targets inventory ID 1, checks branch/product IDs 1 and requires 30 units before deductions or 29 before restoration; mismatches raise an exception. The additional seed and COMMIT/ROLLBACK scripts were revised after the original experiments and statically reviewed only; the retained historical screenshots were not generated by the revisions. Detailed procedures and remaining execution limitations are in the linked portfolios.
 
-## Submission
-The lecturer clarified that the GitHub repository should be **public** (the original PDF says private). Submit the 2–3 page summary and accessible repository URL on the LMS. The lecturer requires progressive GitHub activity and an AI-use declaration where applicable.
+For MongoDB, use either the Portfolio 4 JSON insertion route in Atlas Data Explorer or its mongosh insertion script. These are alternatives. The Filter field accepts filter documents; the JavaScript files run in mongosh. Existing product IDs and temporary ID 9001 must be checked before repeating modifications. Portfolio 5 documents the same Atlas deployment. Credentials and connection strings are not part of the reproduction materials.
+
+## Scope and limitations
+
+- All business and benchmark data are fictional. The MongoDB catalogue is separate from, and not synchronised with, PostgreSQL; matching product IDs do not identify equivalent records across systems.
+- The relational schema simplifies payment and delivery relationships and does not implement a complete checkout, stock-movement or delivery-history workflow.
+- Benchmark timings describe selected runs on a synthetic workload, not production performance. Transaction screenshots provide selected observations, not a complete two-session transcript or crash-recovery test.
+- Atlas evidence shows cloud configuration, three replica-set members, collection access and monitoring at capture time. Forced failover, regional resilience, sharding and cross-node consistency timing were not tested. Backups were inactive in the supplied overview.
+
+## Final assessment documentation
+
+The repository contains a [final-report outline](docs/final-report-outline.md). The completed report, personal reflection, consolidated reference list and final AI-use disclosure are not included. Source attribution remains in the portfolio documents so technical claims stay traceable until the consolidated report is available. The final disclosure should accurately identify assistance and the work personally reviewed, executed and corrected, in accordance with the institution's requirements.

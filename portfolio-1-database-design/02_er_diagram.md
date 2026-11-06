@@ -1,4 +1,4 @@
-# 02 – Entity Relationship Diagram (ERD)
+# Entity Relationship Diagram (ERD)
 
 ## Purpose
 The ER diagram illustrates the nine tables in the Jantora Superstores PostgreSQL database and the relationships between them. It covers online orders, in-store purchases, branch inventory, payments and delivery tracking.
@@ -100,8 +100,8 @@ erDiagram
 - `order_items` separates the products purchased from the order header. It stores the unit price at purchase time, so later changes to the product catalogue price do not alter the recorded sale.
 - `orders.customer_id` is nullable to support walk-in purchases, but a CHECK constraint requires a customer for `ONLINE` orders.
 - Payments and deliveries are optional records. The current schema permits only one of each per order; it does not yet support partial payments, repeated payment attempts, or multiple deliveries.
-- The diagram describes structural relationships. Some operational rules, such as preventing overselling, require transaction logic and will be explored in Portfolio 3.
+- The diagram describes structural relationships. Some operational rules, such as preventing overselling, require transaction logic; Portfolio 3 demonstrates controlled inventory updates and lock contention.
 
 ## Evidence
 
-The diagram reflects `01_schema.sql`, which was used to create the nine tables in pgAdmin. Save a screenshot of the rendered diagram in the `evidence/` folder if required by the lecturer.
+The diagram reflects `01_schema.sql`, which was used to create the nine tables in pgAdmin. The rendered diagram is included in the [evidence folder](evidence/README.md).

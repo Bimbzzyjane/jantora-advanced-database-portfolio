@@ -117,4 +117,4 @@ The `products` table stores each product once, while `inventory` records how muc
 
 `payments` and `deliveries` are linked to `orders` using the order ID. The current design allows at most one payment record and one delivery record per order. A delivery record is not required for every order because customers can shop in-store.
 
-This relational schema provides the structure needed for the next portfolio activities. The full SQL implementation is in `01_schema.sql`, and the separate keys and constraints document will explain the integrity rules in more detail.
+This relational schema underpins the remaining portfolios. The full SQL implementation is in `01_schema.sql`; `04_keys_and_constraints.md` explains the integrity rules.

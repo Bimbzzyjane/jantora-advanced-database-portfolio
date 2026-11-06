@@ -1,8 +1,8 @@
-# Task 4: Keys and Constraints
+# 4: Keys and Constraints
 
 ## 4.1 Introduction
 
-In designing the Jantora Superstores database, I used keys and constraints to connect related tables and reduce the chances of storing incorrect information. These rules are defined in `01_schema.sql` and are enforced by PostgreSQL when records are inserted or updated.
+The Jantora Superstores database uses keys and constraints to connect related tables and reduce the chances of storing incorrect information. These rules are defined in `01_schema.sql` and are enforced by PostgreSQL when records are inserted or updated.
 
 ## 4.2 Primary keys
 
@@ -47,10 +47,8 @@ The schema also restricts order, payment, and delivery statuses to predefined va
 
 ## 4.5 How these rules support the business
 
-For Jantora Superstores, the constraints help prevent common mistakes. The inventory rule avoids negative recorded stock, and the combination of branch ID and product ID ensures that stock is recorded separately for each branch. The online-order check helps us link online purchases to registered customers. Foreign keys prevent records from referring to missing branches, products, or orders.
+For Jantora Superstores, the constraints help prevent common mistakes. The inventory rule avoids negative recorded stock, and the combination of branch ID and product ID ensures that stock is recorded separately for each branch. The online-order check links online purchases to registered customers. Foreign keys prevent records from referring to missing branches, products, or orders.
 
 ## 4.6 Current design limitations
 
-These constraints protect individual records but do not solve every business rule. For example, `quantity >= 0` does not automatically deduct stock after an order or stop two concurrent transactions from selling the same stock. We will examine transaction handling in Portfolio 3. Also, the one-payment-per-order and one-delivery-per-order rules simplify this assessment but would need reconsideration if Jantora later supports split payments, payment retries as separate records, or multiple shipments per order. The current delivery table stores the latest status, not a complete tracking history.
-
-**Source:** Jantora Superstores `portfolio-1-database-design/01_schema.sql` (implemented PostgreSQL schema).
+These constraints protect individual records but do not solve every business rule. For example, `quantity >= 0` does not automatically deduct stock after an order or stop two concurrent transactions from selling the same stock. Portfolio 3 demonstrates conditional stock updates and row-level locking on one inventory record; it does not implement a complete order-and-stock transaction. Also, the one-payment-per-order and one-delivery-per-order rules simplify this assessment but would need reconsideration if Jantora later supports split payments, payment retries as separate records, or multiple shipments per order. The current delivery table stores the latest status, not a complete tracking history.

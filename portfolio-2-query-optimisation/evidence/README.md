@@ -2,20 +2,20 @@
 
 This folder holds screenshots taken from actual PostgreSQL/pgAdmin work for Jantora Superstores. The names below match the references in `../performance_analysis.md`.
 
-## Screenshot checklist
+## Evidence index
 
-| Filename | What it should show |
+| Filename | What it shows |
 |---|---|
-| `01-order-details.png` | Order details with customer, branch and payment status |
+| `01-order-details.png` | Five orders with customer, branch and payment status |
 | `02-revenue-by-branch.png` | Paid-order counts and revenue grouped by branch |
-| `03-above-average-products.png` | Result showing Rice |
+| `03-above-average-products.png` | Result showing Rice 5kg |
 | `04-stock-by-branch.png` | Inventory quantities by branch and product |
 | `05-order-totals.png` | Calculated totals from order items |
 | `06-inventory-execution-plan.png` | Inventory plan with scan, join, sort and timings |
 | `07-before-index.png` | Before-index plan and execution time |
-| `08-after-index.png` | Repeated after-index plan and 0.099 ms execution time |
+| `08-after-index.png` | Bitmap Heap Scan with a child Bitmap Index Scan; repeated execution time 0.099 ms |
 
-## Display screenshots on evidences
+## Screenshots
 
 ### Q1 — Order details
 ![Q1 — Order details](01-order-details.png)

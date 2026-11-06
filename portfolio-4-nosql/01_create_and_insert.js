@@ -2,7 +2,7 @@
 // Run in mongosh connected to your Atlas cluster, NOT in the Atlas Filter box.
 // Same sample data as 01_insert_documents.json; use EITHER Atlas JSON insertion
 // OR this script. Do not do both unless you intend to reconcile duplicates.
-// Idempotent upsert by product_id; no collection drop or wholesale delete.
+
 const jantora = db.getSiblingDB("jantora_nosql");
 const products = jantora.getCollection("products");
 const sample = [

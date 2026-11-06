@@ -1,26 +1,23 @@
-# Portfolio 2 — Query Results and Performance Analysis
+# Query Results and Performance Analysis
 
-**Case study:** Jantora Superstores  
-**Database:** PostgreSQL (`jantora_db`)  
-**Focus:** SQL query processing, execution plans and index optimisation
 
 ## 1. Business queries and observations
 
-I executed the five business queries in `01_queries.sql` using pgAdmin. The queries retrieve information relevant to Jantora Superstores' sales, customers and inventory.
+The screenshots show the five business queries in `01_queries.sql` executed in pgAdmin. The captured dataset contains five orders, consistent with Portfolio 1's basic seed followed by `03_additional_seed.sql`.
 
-| Query | SQL technique | Purpose | Observation from my pgAdmin session |
+| Query | SQL technique | Purpose | Observation visible in the supplied screenshot |
 |---|---|---|---|
-| Q1 — Order details | `JOIN`, `LEFT JOIN`, `COALESCE` | Show orders alongside customer, branch and payment details | The initial result showed three orders, including an in-store purchase displayed as **Walk-in customer** and an online order with a pending payment. |
-| Q2 — Paid revenue by branch | `LEFT JOIN`, `COUNT`, `SUM`, `GROUP BY` | Calculate the number of paid orders and total paid revenue per branch | The query executed successfully. Exact revenue figures should be read from the saved result screenshot; they have not been recorded in this report. |
-| Q3 — Above-average product prices | Scalar subquery, `AVG`, `WHERE` | Identify products priced above the average product price | **Rice** was the only product returned in the dataset tested. |
-| Q4 — Stock by branch | Multi-table `JOIN` | Display inventory quantities by branch and product | The query executed successfully; the related execution plan reported **eight output rows**. |
-| Q5 — Calculated order totals | `JOIN`, `SUM`, `GROUP BY` | Calculate order values from the quantity and unit price of each order item | The query executed successfully. |
+| Q1 — Order details | `JOIN`, `LEFT JOIN`, `COALESCE` | Show orders alongside customer, branch and payment details | Five orders are shown: Ada, a **Walk-in customer**, Tunde, Janet and Joshua. Tunde and Joshua have pending payments. |
+| Q2 — Paid revenue by branch | `LEFT JOIN`, `COUNT`, `SUM`, `GROUP BY` | Calculate the number of paid orders and total paid revenue per branch | Ikeja has three paid orders totalling **NGN 54,100**; Ibadan and Lekki each have zero paid orders and zero paid revenue. |
+| Q3 — Above-average product prices | Scalar subquery, `AVG`, `WHERE` | Identify products priced above the average product price | **Rice 5kg**, priced at **NGN 12,500**, is the only product returned. |
+| Q4 — Stock by branch | Multi-table `JOIN` | Display inventory quantities by branch and product | Eight recorded branch/product inventory rows are shown; the execution plan also reports eight output rows. |
+| Q5 — Calculated order totals | `JOIN`, `SUM`, `GROUP BY` | Calculate order values from the quantity and unit price of each order item | Totals for order IDs 1–5 are **NGN 27,200; 1,900; 12,500; 25,000; 2,850**, respectively. |
 
-These queries demonstrate how a relational database can answer practical business questions. The results depend on the records present when each query is run; additional sample customers and orders may change later outputs.
+Q2 measures payments marked `PAID`, without an order-status exclusion; Q4 lists recorded inventory combinations; Q5 includes orders with line items. These query scopes should be considered when interpreting the results.
 
 ## 2. Execution plan: inventory query
 
-I used `EXPLAIN (ANALYZE, BUFFERS)` with the inventory query (Q4) in `02_execution_plans.sql` to examine how PostgreSQL retrieved and combined the records.
+The inventory query (Q4) in `02_execution_plans.sql` uses `EXPLAIN (ANALYZE, BUFFERS)` to examine how PostgreSQL retrieves and combines the records.
 
 | Measurement | Observed result |
 |---|---|
@@ -39,7 +36,7 @@ I used `EXPLAIN (ANALYZE, BUFFERS)` with the inventory query (Q4) in `02_executi
 
 ### 3.1 Test design
 
-I used `03_index_optimisation.sql` to create a separate table named `portfolio2_benchmark_orders` containing **100,000 synthetic order-like records**. This table models a larger customer-order search workload that Jantora Superstores might experience as its business grows. It is **not** the existing Jantora `orders` table, and it does not establish production performance.
+The script `03_index_optimisation.sql` creates a separate table named `portfolio2_benchmark_orders` containing **100,000 synthetic order-like records**. This table models a larger customer-order search workload that Jantora Superstores might experience as its business grows. It is **not** the existing Jantora `orders` table, and it does not establish production performance.
 
 The same query was measured before and after indexing:
 
@@ -49,7 +46,7 @@ FROM portfolio2_benchmark_orders
 WHERE customer_number = 42;
 ```
 
-After recording the baseline, the script created this index:
+After recording the baseline, the below index was created:
 
 ```sql
 CREATE INDEX idx_p2_benchmark_customer_number
@@ -62,14 +59,14 @@ The SQL query and filter condition were unchanged for the before-and-after compa
 
 | Measurement | Before index | After index (repeated run) |
 |---|---:|---:|
-| Scan method | Sequential Scan (verify against saved baseline screenshot) | Index Scan |
+| Scan method | Sequential Scan | Bitmap Heap Scan with a child Bitmap Index Scan |
 | Planning time | 0.119 ms | 0.144 ms |
 | Execution time | 4.713 ms | 0.099 ms |
 | Planning + execution | 4.832 ms | 0.243 ms |
 
-The **first** after-index run took **4.321 ms to plan** and **0.201 ms to execute**. A repeated run took **0.144 ms to plan** and **0.099 ms to execute**. I have reported both observations because performance measurements can vary between runs.
+The earlier after-index run was reported as **4.321 ms to plan** and **0.201 ms to execute**. These original measurements are retained, but no screenshot or execution log for that run is supplied. The repeated run's **0.144 ms planning** and **0.099 ms execution**, and the baseline planning and execution times, are visible in `08-after-index.png` and `07-before-index.png`, respectively.
 
-The selected execution-time reduction is:
+The planning-plus-execution totals are calculated from the captured timings. The selected execution-time reduction is:
 
 \[
 \frac{4.713 - 0.099}{4.713} \times 100 = 97.90\%.
@@ -79,22 +76,25 @@ The query therefore executed approximately **47.61 times faster** in the selecte
 
 ### 3.3 Interpretation
 
-Before the index was created, PostgreSQL had to inspect the table to find rows matching `customer_number = 42`. After indexing, the execution plan showed an **Index Scan**, indicating that PostgreSQL used the new index to locate matching records more directly. This explains why execution was substantially faster in the recorded comparison.
+The baseline screenshot shows a **Sequential Scan**, five matches and 99,995 rows removed by the filter. After indexing, a **Bitmap Index Scan** on `idx_p2_benchmark_customer_number` identifies matching heap locations, and its parent **Bitmap Heap Scan** retrieves the five rows. Shared-buffer hits decreased from **736 to 7**. Both captured runs show buffer hits; this is not evidence of reduced physical disk reads.
 
-The initial after-index run had an unusually high planning time compared with the repeated run. One measurement is not enough to determine its cause. Caching, system activity and other measurement conditions can affect timings; it would be inappropriate to attribute the difference solely to the index.
+The reported earlier after-index run had a higher planning time than the captured repeated run. Its cause cannot be established from the supplied evidence. The comparison uses one baseline and a selected repeated indexed run, without a balanced series of trials; it does not establish an average speedup or isolate caching and system-load effects.
 
 ## 4. Practical evidence
 
-The following screenshots were captured or requested during the pgAdmin exercise.
+The following screenshots are present in the repository.
 
 | Evidence file | What it demonstrates |
 |---|---|
 | `evidence/01-order-details.png` | Q1 output showing customer, branch and payment details |
 | `evidence/02-revenue-by-branch.png` | Q2 paid revenue grouped by branch |
-| `evidence/03-above-average-products.png` | Q3 result identifying Rice |
+| `evidence/03-above-average-products.png` | Q3 result identifying Rice 5kg |
 | `evidence/04-stock-by-branch.png` | Q4 stock by product and branch |
 | `evidence/05-order-totals.png` | Q5 calculated order totals |
 | `evidence/06-inventory-execution-plan.png` | Inventory query plan, including scan and join operations |
 | `evidence/07-before-index.png` | Benchmark plan and timing before indexing |
 | `evidence/08-after-index.png` | Repeated benchmark plan and timing after indexing |
 
+## Source attribution
+
+The measurements and results above come from the repository's scripts and screenshots. PostgreSQL's [Using EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html) explains sequential scans, bitmap index scans and bitmap heap scans.

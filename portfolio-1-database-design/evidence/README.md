@@ -15,6 +15,6 @@ The diagram shows the nine entities and their relationships.
 
 ### 3. Database Keys and Constraints
 
-The screenshot shows the keys and constraints implemented in PostgreSQL.
+The screenshot shows the inventory table's listed primary key, foreign keys, composite uniqueness and non-negative quantity check. It is an example of the implemented constraints, not evidence that every constraint across all nine tables was tested.
 
 ![Table Constraints](03-table-constraints.png)

@@ -42,6 +42,4 @@ Online orders must be linked to a registered customer, while in-store purchases 
 
 ## 1.5 Future Expansion
 
-The initial case study focuses on a manageable relational database. As Jantora Superstores grows into multiple branches and states, the business may face higher transaction volumes and greater demands for availability and reliable access to information. Later portfolio activities will explore query optimisation, transactions, NoSQL modelling and cloud or distributed database concepts using this same business scenario.
-
-The organisation and sample records are fictional and are used for academic demonstration.
+The initial case study focuses on a manageable relational database. As Jantora Superstores grows into multiple branches and states, the business may face higher transaction volumes and greater demands for availability and reliable access to information. The remaining portfolios examine query optimisation, transactions, NoSQL modelling and cloud or distributed database concepts using this same business scenario.

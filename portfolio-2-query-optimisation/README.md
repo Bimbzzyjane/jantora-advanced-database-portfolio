@@ -16,7 +16,7 @@ This portfolio demonstrates how SQL can answer business questions for Jantora Su
 
 ## Part 1 — Business queries
 
-Ran each statement in `01_queries.sql` separately against `jantora_db` in pgAdmin.
+The supplied screenshots show the five queries in `01_queries.sql` executed against `jantora_db` in pgAdmin. They use the five-order dataset produced by Portfolio 1's schema, basic seed and additional seed scripts, including Janet and Joshua.
 
 | Query | Business question | SQL techniques |
 |---|---|---|
@@ -39,12 +39,16 @@ In the captured run, the plan showed sequential scans, hash joins, quicksort, ei
 `03_index_optimisation.sql` is divided into sections. **Run one section at a time, in order:**
 
 1. **A — Setup:** Create a separate table, `portfolio2_benchmark_orders`, and insert 100,000 synthetic order-like records.
-2. **B — Before:** Run the customer-number lookup with `EXPLAIN (ANALYZE, BUFFERS)` and save its plan.
+2. **B — Before:** Run the customer-number lookup with `EXPLAIN (ANALYZE, BUFFERS)` and inspect its plan.
 3. **C — Index:** Create `idx_p2_benchmark_customer_number` on `customer_number`, then update statistics.
-4. **D — Verify:** Check the index definition in `pg_indexes` (optional screenshot).
-5. **E — After:** Repeat the same lookup and save the new plan.
+4. **D — Verify:** Check the index definition in `pg_indexes`.
+5. **E — After:** Repeat the same lookup and inspect the new plan.
 
-**Why use a separate benchmark table?** Jantora's existing business tables contain too few rows to make a performance comparison especially informative. The synthetic table models a larger order-search workload relevant to a growing supermarket. **It is not Jantora's actual `orders` table**, and no production-performance claim is made.
+Jantora's existing business tables contain too few rows to make a performance comparison especially informative. The synthetic table models a larger order-search workload relevant to a growing supermarket. **It is not Jantora's actual `orders` table**, and no production-performance claim is made.
+
+Section A drops and recreates only the synthetic benchmark table when repeated. The benchmark is separate from the nine operational tables and the five captured orders.
+
+The after-index screenshot shows a **Bitmap Heap Scan with a child Bitmap Index Scan** using `idx_p2_benchmark_customer_number`.
 
 ### Recorded comparison
 
@@ -54,8 +58,8 @@ In the captured run, the plan showed sequential scans, hash joins, quicksort, ei
 | Execution time | 4.713 ms | 0.099 ms |
 | Planning + execution | 4.832 ms | 0.243 ms |
 
-The selected execution-time reduction was **97.90%**. An earlier after-index run measured **4.321 ms planning** and **0.201 ms execution**, demonstrating timing variability. The full discussion is in `performance_analysis.md`.
+The selected execution-time reduction was **97.90%**. An earlier after-index run was reported as **4.321 ms planning** and **0.201 ms execution**; those values are retained as reported measurements, but no screenshot or execution log for that run is supplied. The table above is supported by the before-index and repeated after-index screenshots. The full discussion is in `performance_analysis.md`.
 
 ## Evidence and reproducibility
 
-See [`evidence/README.md`](evidence/README.md) for the screenshot checklist. 
+See [`evidence/README.md`](evidence/README.md) for the evidence index.
