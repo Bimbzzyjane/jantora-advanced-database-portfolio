@@ -6,7 +6,7 @@
 
 ## About the project
 
-This project applies advanced database concepts to Jantora Superstores, a fictional retailer based in Lagos, Nigeria. The business sells groceries and household goods through physical stores and an online shopping scenario, with sample branches in Ikeja, Lekki and Ibadan.
+This project applies advanced database concepts to Jantora Superstores, a fictional retailer based in Lagos, Nigeria. The business sells groceries and household goods through physical stores and an online shopping store, with sample branches in Ikeja, Lekki and Ibadan.
 
 I chose a supermarket because its everyday activities bring together products, customers, stock, orders and payments. As more branches open, the business needs organised records to show what was purchased, where stock is held and which orders have been paid for. Using one case study helped me connect database design, useful business queries, reliable stock updates and cloud database concepts across five portfolios.
 
@@ -63,16 +63,6 @@ For the remaining exercises:
 - **MongoDB:** Follow the [Portfolio 4 guide](portfolio-4-nosql/README.md). Use either the [JSON sample data](portfolio-4-nosql/01_insert_documents.json) in Atlas Data Explorer or the [alternative mongosh insertion script](portfolio-4-nosql/01_create_and_insert.js). The [query](portfolio-4-nosql/02_queries.js) and [update/delete](portfolio-4-nosql/03_update_and_delete.js) files explain both routes. Atlas's Filter box accepts search conditions; full JavaScript commands run in mongosh. Check existing product IDs and starting values before repeating changes.
 - **Cloud inspection:** Follow [Portfolio 5](portfolio-5-distributed-cloud/README.md), which uses the same Atlas deployment as Portfolio 4.
 
-Database credentials and connection strings are not included in the repository.
-
-## Scope and limitations
-
-- All data is fictional. The MongoDB catalogue is separate from PostgreSQL and is not synchronised with it; matching IDs do not establish matching products.
-- The relational design allows at most one payment and one delivery record per order. A complete checkout process linking orders, payments and stock changes, and a full delivery history, would require further work.
-- Performance timings describe selected synthetic-data runs, rather than expected performance for a live retailer. Crash recovery was not tested.
-- The final MongoDB collection screenshot shows the four original products but does not verify the reported restoration of the kettle warranty to 12 months.
-- Cloud access and member roles were observed. Failover, regional resilience and consistency timing between members were not tested. Read/write concerns and sharding—dividing data across servers—were discussed, not tested. Backups were inactive in the captured Atlas overview.
-
-## Final report and AI-use declaration
+## Final report
 
 The [final report](Final-documentation/Okedoyin_Janet_301931096.md) contains the portfolio summary, individual reflection, evidence links, references and AI-use declaration. Technical sources also appear in the individual portfolio documents.

@@ -2,7 +2,9 @@
 
 **Course:** MIT 8103 — Advanced Database Systems
 
-**Name:** Janet Okedoyin       **Student ID:** 301931096
+**Name:** Janet Okedoyin       
+
+**Student ID:** 301931096
 
 **Selected organisation:** Jantora Superstores, Lagos, Nigeria
 
@@ -57,5 +59,5 @@ If I were to extend this project, I would focus on integrating order creation, p
 4. MongoDB. *Replication and Replica Set Fundamentals*. [MongoDB documentation](https://www.mongodb.com/docs/manual/replication/).
 
 
-**AI-use declaration:** I used OpenAI ChatGPT to assist with planning, understanding database concepts, drafting and explaining SQL and MongoDB examples, troubleshooting, interpreting results and preparing documentation. I also used Codex in VS Code to review the repository and improve documentation and selected SQL scripts.
+**AI-use declaration:** I used OpenAI ChatGPT to assist with planning, understanding database concepts, drafting and explaining SQL and MongoDB examples, troubleshooting and interpreting results. I also used Codex in VS Code to review the repository and improve documentation and selected SQL scripts.
 I performed the original practical exercises in pgAdmin and MongoDB Atlas, reviewed the outputs and captured supporting screenshots. I remain responsible for understanding, verifying and accurately presenting the work submitted.
